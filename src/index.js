@@ -13,8 +13,15 @@ const port=process.env.PORT || 3000;
 const publicDirectoryPath=path.join(__dirname, '../public');
 
 app.use(express.static(publicDirectoryPath));
-io.on('connection',()=>{
+
+io.on('connection',(socket)=>{
   console.log("new socket connection");
+  
+  socket.emit('message',"welcome!")
+
+  socket.on('SendMessage',(notification)=>{
+    io.emit('message',notification);
+  })
 })
 
 server.listen(port,()=>{
