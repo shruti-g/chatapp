@@ -7,7 +7,21 @@ socket.on('message',(message)=>{
 
 document.querySelector("#message-form").addEventListener('submit',(e)=>{
   e.preventDefault();
-  // var message=document.querySelector('input').value
   var message = e.target.elements.message.value
   socket.emit('SendMessage',message)
+})
+document.querySelector('#send-location').addEventListener('click',()=>{
+  if(!navigator.geolocation)
+  {
+    return alert("the browser do not support this feature")
+  }
+  navigator.geolocation.getCurrentPosition((position)=>{
+    const latitude=position.coords.latitude
+    const longitude=position.coords.longitude
+    socket.emit('shareLocation',{
+      latitude:latitude,
+      longitude:longitude
+    });
+
+  })
 })

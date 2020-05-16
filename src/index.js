@@ -16,11 +16,22 @@ app.use(express.static(publicDirectoryPath));
 
 io.on('connection',(socket)=>{
   console.log("new socket connection");
-  
+
   socket.emit('message',"welcome!")
+
+  socket.broadcast.emit('message',"a new user has joined !")
 
   socket.on('SendMessage',(notification)=>{
     io.emit('message',notification);
+  })
+
+  socket.on('disconnect',()=>{
+    io.emit('message',"a new user has disconnected")
+  })
+
+  socket.on('shareLocation',(coords)=>{
+    io.emit('message',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+
   })
 })
 
