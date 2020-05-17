@@ -1,7 +1,8 @@
 const express=require("express");
-const  path=require('path');//no need to install as it is global package
+const  path=require('path');
 const http=require('http');
 const socketio= require('socket.io');
+const Filter=require('bad-words');
 
 const app=express();
 
@@ -21,17 +22,28 @@ io.on('connection',(socket)=>{
 
   socket.broadcast.emit('message',"a new user has joined !")
 
-  socket.on('SendMessage',(notification)=>{
-    io.emit('message',notification);
+  socket.on('SendMessage',(message,callback)=>{
+
+    const filter=new Filter();
+    if(filter.isProfane(message))
+    {
+        callback('error occured cannot send such messages')
+    }
+    else {
+      io.emit('message',message);
+      // callback('message is deliverd to client');
+      callback()
+    }
+
   })
 
   socket.on('disconnect',()=>{
     io.emit('message',"a new user has disconnected")
   })
 
-  socket.on('shareLocation',(coords)=>{
+  socket.on('shareLocation',(coords,callback)=>{
     io.emit('message',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
-
+    callback('shared locaiton')
   })
 })
 

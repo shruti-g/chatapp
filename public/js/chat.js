@@ -8,7 +8,16 @@ socket.on('message',(message)=>{
 document.querySelector("#message-form").addEventListener('submit',(e)=>{
   e.preventDefault();
   var message = e.target.elements.message.value
-  socket.emit('SendMessage',message)
+  socket.emit('SendMessage',message,(error)=>{
+    if (error)
+    {
+      console.log(error);
+    }
+    else {
+      console.log("message dilivered!");
+    }
+    // console.log(message);
+  })
 })
 document.querySelector('#send-location').addEventListener('click',()=>{
   if(!navigator.geolocation)
@@ -21,6 +30,8 @@ document.querySelector('#send-location').addEventListener('click',()=>{
     socket.emit('shareLocation',{
       latitude:latitude,
       longitude:longitude
+    },(message)=>{
+      console.log(message);
     });
 
   })
