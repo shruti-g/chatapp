@@ -1,17 +1,35 @@
 const socket=io()
 
 //elements
-const $messageForm = document.querySelector("#message-form")//$ sign implies tat these are elements defined this is just a convention for readablity
+const $messageForm = document.querySelector("#message-form")
 const $messageFormInput = $messageForm.querySelector('input')
 const $messageFormButton = $messageForm.querySelector('button')
-
 const $sendLocationButton=document.querySelector('#send-location')
+const $messages=document.querySelector('#messages')//messages div
 
+
+//Templates
+const messageTemplate=document.querySelector("#message-template").innerHTML
+const locationTemplate=document.querySelector('#location-template').innerHTML
 
 socket.on('message',(message)=>{
     console.log(message)
+
+    const html=Mustache.render(messageTemplate,{
+      message:message
+    })
+    $messages.insertAdjacentHTML('beforeend',html)
+
+
 });
 
+socket.on('locationMessage',(locationMessage)=>{
+  console.log(locationMessage);
+  const html=Mustache.render(locationTemplate,{
+    locationMessage:locationMessage
+  })
+  $messages.insertAdjacentHTML('beforeend',html);
+})
 $messageForm.addEventListener('submit',(e)=>{
   e.preventDefault();
   //disable send button $messageFormButton
@@ -31,7 +49,6 @@ $messageForm.addEventListener('submit',(e)=>{
     else {
       console.log("message dilivered!");
     }
-    // console.log(message);
   })
 })
 $sendLocationButton.addEventListener('click',()=>{
@@ -41,7 +58,7 @@ $sendLocationButton.addEventListener('click',()=>{
   }
   //disable location button
   $sendLocationButton.setAttribute('disabled','disabled');
-  
+
   navigator.geolocation.getCurrentPosition((position)=>{
     const latitude=position.coords.latitude
     const longitude=position.coords.longitude
